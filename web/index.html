@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ResolveWallet – Student Accountability Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-elevated: #070b18;
+      --surface: #0b1020;
+      --surface-soft: #111827;
+      --border-subtle: #1f2937;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.18);
+      --accent-strong: #0ea5e9;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --success: #4ade80;
+      --warn: #fbbf24;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 0 0, #1d263b 0, #050816 45%, #020617 100%);
+      color: var(--text-main);
+    }
+
+    .app-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 20px 40px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(120deg, rgba(15, 23, 42, 0.9), rgba(8, 47, 73, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 16px 16px 18px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .metric-card {
+      background: var(--surface-soft);
+      border-radius: var(--radius-md);
+      padding: 10px 10px 12px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .metric-chip {
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .progress-section {
+      margin-top: 12px;
+    }
+
+    .progress-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-value {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      position: relative;
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      transition: width 0.25s ease-out;
+    }
+
+    .focus-card {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.18), transparent 60%);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+    }
+
+    .focus-label {
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .focus-main {
+      font-size: 13px;
+    }
+
+    .focus-meta {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .form-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .field-label {
+      color: var(--text-muted);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .primary-btn {
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: #0b1120;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .primary-btn:hover {
+      background: var(--accent-strong);
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .filters-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .filter-pill--active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+
+    .table-wrapper {
+      margin-top: 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #020617;
+    }
+
+    thead {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    th, td {
+      padding: 8px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid #111827;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    td.goal-text {
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid transparent;
+    }
+
+    .badge-category {
+      border-color: rgba(75, 85, 99, 0.9);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .badge-priority-low {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: var(--success);
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    .badge-priority-medium {
+      border-color: rgba(234, 179, 8, 0.5);
+      color: var(--warn);
+      background: rgba(251, 191, 36, 0.07);
+    }
+
+    .badge-priority-high {
+      border-color: rgba(248, 113, 113, 0.6);
+      color: var(--danger);
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .status-pending {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--accent-strong);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+    }
+
+    .status-completed {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.6);
+    }
+
+    .status-missed {
+      background: rgba(248, 113, 113, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .row-btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: var(--text-main);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .row-btn--primary {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: var(--success);
+    }
+
+    .row-btn--danger {
+      border-color: rgba(248, 113, 113, 0.5);
+      color: var(--danger);
+    }
+
+    .row-btn:hover {
+      background: #111827;
+    }
+
+    .empty-state {
+      padding: 16px 12px 18px;
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(75, 85, 99, 0.8);
+      background: rgba(15, 23, 42, 0.8);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .field-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+
+  <!-- ethers.js for browser, loaded before your own script -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-name">ResolveWallet</span>
+        <span class="brand-tagline">Turn your goals into verifiable commitments, starting locally.</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="pill" id="networkStatus">Not connected</div>
+        <button type="button" id="connectBtn" class="primary-btn" style="font-size: 12px; padding-inline: 14px;">
+          Connect wallet
+        </button>
+      </div>
+    </header>
+
+    <div class="layout-grid">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Your accountability snapshot</div>
+            <div class="panel-subtitle">On-chain credits plus your local goal board.</div>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Wallet balance</div>
+            <div class="metric-value" id="metricBalance">0</div>
+            <div class="metric-chip">On-chain credits</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Locked in goals</div>
+            <div class="metric-value" id="metricStaked">0</div>
+            <div class="metric-chip">Active stakes</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Earned back</div>
+            <div class="metric-value" id="metricEarned">0</div>
+            <div class="metric-chip">Completed goals</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Burned</div>
+            <div class="metric-value" id="metricBurned">0</div>
+            <div class="metric-chip">Missed commitments</div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-label-row">
+            <div class="progress-label">Completion rate</div>
+            <div class="progress-value" id="metricRate">0%</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="metricRateFill"></div>
+          </div>
+        </div>
+
+        <div class="focus-card" id="focusCard">
+          <div class="focus-label">Today’s focus</div>
+          <div class="focus-main" id="focusMain">No pending goals yet. Create one that matters to you today.</div>
+          <div class="focus-meta" id="focusMeta"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Add a new goal</div>
+            <div class="panel-subtitle">Goals are saved locally. Stakes are mirrored on-chain when your wallet is connected.</div>
+          </div>
+        </div>
+
+        <form id="goalForm">
+          <div class="form-fields">
+            <div class="field-group">
+              <div class="field-label">Goal</div>
+              <input type="text" id="goalText" placeholder="Finish lab report, solve 3 DSA problems, revise French vocabulary" required />
+            </div>
+            <div class="field-group">
+              <div class="field-label">Details</div>
+              <div class="field-row">
+                <select id="goalCategory" required>
+                  <option value="Study">Study</option>
+                  <option value="Career">Career</option>
+                  <option value="Health">Health</option>
+                  <option value="Habits">Habits</option>
+                  <option value="Personal">Personal</option>
+                </select>
+                <select id="goalPriority" required>
+                  <option value="Medium">Medium priority</option>
+                  <option value="High">High priority</option>
+                  <option value="Low">Low priority</option>
+                </select>
+                <input type="number" id="goalStake" min="1" value="10" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">Deadline</div>
+            <input type="date" id="goalDeadline" required />
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="primary-btn" id="createGoalBtn">Create goal</button>
+            <span class="helper-text">
+              If your wallet is connected, stakes are sent to your Stylus contract on Arbitrum Sepolia.
+            </span>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top: 18px;">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Goal board</div>
+          <div class="panel-subtitle">Track all commitments, filter by state, and close the loop on your promises.</div>
+        </div>
+        <div class="filters-row">
+          <button type="button" class="filter-pill filter-pill--active" data-filter="all">All</button>
+          <button type="button" class="filter-pill" data-filter="active">Active</button>
+          <button type="button" class="filter-pill" data-filter="completed">Completed</button>
+          <button type="button" class="filter-pill" data-filter="missed">Missed</button>
+        </div>
+      </div>
+
+      <div id="boardContainer">
+        <div class="empty-state" id="emptyState">
+          No goals yet. Start with a small, specific task you can finish today and stake a few tokens on it.
+        </div>
+
+        <div class="table-wrapper hidden" id="tableWrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Goal</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Stake</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th style="width: 150px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="goalBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      ResolveWallet keeps your goal board in your browser. Stakes and balances live on your Stylus contract on Arbitrum Sepolia.
+    </div>
+  </div>
+
+  <script>
+    const CONTRACT_ADDRESS = "0xbdd9affac076b92352577a595a95f93b33eee8bc";
+
+    const CONTRACT_ABI = [
+      {
+        "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+        "name": "balancesOf",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" },
+          { "internalType": "uint256", "name": "", "type": "uint256" },
+          { "internalType": "uint256", "name": "", "type": "uint256" },
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "charityPoolTotal",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "string", "name": "text", "type": "string" },
+          { "internalType": "string", "name": "category", "type": "string" },
+          { "internalType": "string", "name": "priority", "type": "string" },
+          { "internalType": "uint256", "name": "stake", "type": "uint256" },
+          { "internalType": "string", "name": "deadline", "type": "string" }
+        ],
+        "name": "createGoal",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    let wallet = { balance: 0, staked: 0, earned: 0, burned: 0 };
+    let goals = [];
+    let currentFilter = "all";
+
+    let provider = null;
+    let signer = null;
+    let userAddress = null;
+    let contract = null;
+
+    const WALLET_KEY = "resolve_wallet_v2";
+    const GOALS_KEY = "resolve_goals_v2";
+
+    function loadState() {
+      const w = localStorage.getItem(WALLET_KEY);
+      const g = localStorage.getItem(GOALS_KEY);
+      if (w) {
+        try { wallet = JSON.parse(w); } catch {}
+      }
+      if (g) {
+        try { goals = JSON.parse(g); } catch {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(WALLET_KEY, JSON.stringify(wallet));
+      localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+    }
+
+    function updateStats() {
+      const balanceEl = document.getElementById("metricBalance");
+      const stakedEl = document.getElementById("metricStaked");
+      const earnedEl = document.getElementById("metricEarned");
+      const burnedEl = document.getElementById("metricBurned");
+      balanceEl.textContent = wallet.balance;
+      stakedEl.textContent = wallet.staked;
+      earnedEl.textContent = wallet.earned;
+      burnedEl.textContent = wallet.burned;
+
+      const total = goals.length;
+      const completed = goals.filter(g => g.status === "completed").length;
+      const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
+      const rateEl = document.getElementById("metricRate");
+      const rateFill = document.getElementById("metricRateFill");
+      rateEl.textContent = rate + "%";
+      rateFill.style.width = rate + "%";
+
+      updateFocusCard();
+    }
+
+    function updateFocusCard() {
+      const focusMain = document.getElementById("focusMain");
+      const focusMeta = document.getElementById("focusMeta");
+      const pending = goals.filter(g => g.status === "pending");
+
+      if (pending.length === 0) {
+        focusMain.textContent = "No pending goals yet. Create one that you can complete before the day ends.";
+        focusMeta.textContent = "";
+        return;
+      }
+
+      const today = new Date();
+      const withDate = pending.map(g => {
+        const d = g.deadline ? new Date(g.deadline) : null;
+        return { g, d };
+      });
+
+      withDate.sort((a, b) => {
+        if (!a.d && !b.d) return 0;
+        if (!a.d) return 1;
+        if (!b.d) return -1;
+        return a.d - b.d;
+      });
+
+      const next = withDate[0].g;
+      focusMain.textContent = next.text;
+
+      if (next.deadline) {
+        const d = new Date(next.deadline + "T00:00:00");
+        const diff = d - today;
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        let label = "";
+        if (days <= 0) label = "Deadline is today";
+        else if (days === 1) label = "Deadline in 1 day";
+        else label = "Deadline in " + days + " days";
+        focusMeta.textContent = label + " · Stake " + next.stake + " tokens · " + next.category + ", " + next.priority + " priority";
+      } else {
+        focusMeta.textContent = "No deadline set · Stake " + next.stake + " tokens · " + next.category + ", " + next.priority + " priority";
+      }
+    }
+
+    function filteredGoals() {
+      if (currentFilter === "active") {
+        return goals.filter(g => g.status === "pending");
+      }
+      if (currentFilter === "completed") {
+        return goals.filter(g => g.status === "completed");
+      }
+      if (currentFilter === "missed") {
+        return goals.filter(g => g.status === "missed");
+      }
+      return goals;
+    }
+
+    function renderGoals() {
+      const tbody = document.getElementById("goalBody");
+      const wrapper = document.getElementById("tableWrapper");
+      const empty = document.getElementById("emptyState");
+      tbody.innerHTML = "";
+
+      const visible = filteredGoals();
+
+      if (visible.length === 0) {
+        wrapper.classList.add("hidden");
+        empty.classList.remove("hidden");
+        return;
+      }
+
+      wrapper.classList.remove("hidden");
+      empty.classList.add("hidden");
+
+      visible.forEach(goal => {
+        const tr = document.createElement("tr");
+
+        const goalTd = document.createElement("td");
+        goalTd.className = "goal-text";
+        goalTd.textContent = goal.text;
+
+        const catTd = document.createElement("td");
+        const catBadge = document.createElement("span");
+        catBadge.className = "badge badge-category";
+        catBadge.textContent = goal.category;
+        catTd.appendChild(catBadge);
+
+        const prTd = document.createElement("td");
+        const prBadge = document.createElement("span");
+        if (goal.priority === "High") prBadge.className = "badge badge-priority-high";
+        else if (goal.priority === "Low") prBadge.className = "badge badge-priority-low";
+        else prBadge.className = "badge badge-priority-medium";
+        prBadge.textContent = goal.priority;
+        prTd.appendChild(prBadge);
+
+        const stakeTd = document.createElement("td");
+        stakeTd.textContent = goal.stake;
+
+        const deadlineTd = document.createElement("td");
+        deadlineTd.textContent = goal.deadline || "Not set";
+
+        const statusTd = document.createElement("td");
+        const statusBadge = document.createElement("span");
+        statusBadge.className =
+          goal.status === "pending"
+            ? "status-badge status-pending"
+            : goal.status === "completed"
+            ? "status-badge status-completed"
+            : "status-badge status-missed";
+        statusBadge.textContent = goal.status;
+        statusTd.appendChild(statusBadge);
+
+        const actionsTd = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "row-actions";
+
+        if (goal.status === "pending") {
+          const completeBtn = document.createElement("button");
+          completeBtn.type = "button";
+          completeBtn.className = "row-btn row-btn--primary";
+          completeBtn.textContent = "Completed";
+          completeBtn.onclick = () => completeGoal(goal.id);
+
+          const missBtn = document.createElement("button");
+          missBtn.type = "button";
+          missBtn.className = "row-btn row-btn--danger";
+          missBtn.textContent = "Missed";
+          missBtn.onclick = () => missGoal(goal.id);
+
+          actions.appendChild(completeBtn);
+          actions.appendChild(missBtn);
+        } else {
+          const label = document.createElement("span");
+          label.style.fontSize = "11px";
+          label.style.color = "#9ca3af";
+          label.textContent = "No actions";
+          actions.appendChild(label);
+        }
+
+        actionsTd.appendChild(actions);
+
+        tr.appendChild(goalTd);
+        tr.appendChild(catTd);
+        tr.appendChild(prTd);
+        tr.appendChild(stakeTd);
+        tr.appendChild(deadlineTd);
+        tr.appendChild(statusTd);
+        tr.appendChild(actionsTd);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function addGoal(text, category, priority, stake, deadline) {
+      if (stake > wallet.balance && contract) {
+        alert("Not enough on-chain credits. Use your Node script to deposit, or lower the stake.");
+        return;
+      }
+
+      if (contract && userAddress) {
+        try {
+          const btn = document.getElementById("createGoalBtn");
+          btn.disabled = true;
+          btn.textContent = "Creating on chain...";
+
+          const tx = await contract.createGoal(
+            text,
+            category,
+            priority,
+            ethers.BigNumber.from(stake),
+            deadline
+          );
+          await tx.wait();
+        } catch (err) {
+          console.error(err);
+          alert("Wallet connect failed: " + (err && err.message ? err.message : err));
+        } finally {
+          const btn = document.getElementById("createGoalBtn");
+          btn.disabled = false;
+          btn.textContent = "Create goal";
+        }
+      }
+
+      const goal = {
+        id: Date.now(),
+        text,
+        category,
+        priority,
+        stake,
+        deadline,
+        status: "pending",
+        createdAt: new Date().toISOString()
+      };
+
+      goals.push(goal);
+      wallet.balance -= stake;
+      wallet.staked += stake;
+      saveState();
+      updateStats();
+      renderGoals();
+    }
+
+    function completeGoal(id) {
+      const goal = goals.find(g => g.id === id);
+      if (!goal || goal.status !== "pending") return;
+      goal.status = "completed";
+      wallet.staked -= goal.stake;
+      wallet.earned += goal.stake;
+      wallet.balance += goal.stake;
+      saveState();
+      updateStats();
+      renderGoals();
+    }
+
+    function missGoal(id) {
+      const goal = goals.find(g => g.id === id);
+      if (!goal || goal.status !== "pending") return;
+      goal.status = "missed";
+      wallet.staked -= goal.stake;
+      wallet.burned += goal.stake;
+      saveState();
+      updateStats();
+      renderGoals();
+    }
+
+    function setFilter(newFilter) {
+      currentFilter = newFilter;
+      const pills = document.querySelectorAll(".filter-pill");
+      pills.forEach(p => {
+        const v = p.getAttribute("data-filter");
+        if (v === newFilter) p.classList.add("filter-pill--active");
+        else p.classList.remove("filter-pill--active");
+      });
+      renderGoals();
+    }
+
+    async function connectWallet() {
+      const status = document.getElementById("networkStatus");
+      if (!window.ethereum) {
+        alert("Install MetaMask to connect your wallet.");
+        return;
+      }
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        userAddress = accounts[0];
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+        status.textContent = "Connected: " +
+          userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+
+        const [available, staked, earned, burned] = await contract.balancesOf(userAddress);
+        wallet.balance = Number(available.toString());
+        wallet.staked = Number(staked.toString());
+        wallet.earned = Number(earned.toString());
+        wallet.burned = Number(burned.toString());
+        saveState();
+        updateStats();
+
+        try {
+          const pool = await contract.charityPoolTotal();
+          console.log("charityPoolTotal:", pool.toString());
+        } catch (e) {
+          console.log("charityPoolTotal read failed", e);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Wallet connect failed: " + (err && err.message ? err.message : err));
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      updateStats();
+      renderGoals();
+
+      const form = document.getElementById("goalForm");
+      form.addEventListener("submit", async e => {
+        e.preventDefault();
+        const text = document.getElementById("goalText").value.trim();
+        const category = document.getElementById("goalCategory").value;
+        const priority = document.getElementById("goalPriority").value;
+        const stake = parseInt(document.getElementById("goalStake").value, 10);
+        const deadline = document.getElementById("goalDeadline").value;
+        if (!text || !stake || !deadline) {
+          alert("Fill in goal, stake, and deadline.");
+          return;
+        }
+        await addGoal(text, category, priority, stake, deadline);
+        form.reset();
+      });
+
+      const filterButtons = document.querySelectorAll(".filter-pill");
+      filterButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const value = btn.getAttribute("data-filter");
+          setFilter(value);
+        });
+      });
+
+      const connectBtn = document.getElementById("connectBtn");
+      connectBtn.addEventListener("click", connectWallet);
+    });
+  </script>
+</body>
+</html>
