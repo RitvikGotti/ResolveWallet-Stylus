@@ -1,8 +1,7 @@
 // test.js
-require('dotenv').config({ override: true }); // allows .env to override system envs
+require('dotenv').config({ override: true }); 
 const { readFileSync } = require('fs');
 
-// ---- Polyfill fetch for Node 16 ----
 const { fetch, Headers, Request, Response } = require('undici');
 globalThis.fetch = fetch;
 globalThis.Headers = Headers;
@@ -11,20 +10,16 @@ globalThis.Response = Response;
 
 const { createPublicClient, http, isAddress } = require('viem');
 
-// ---- Config ----
 const RPC = process.env.RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc';
 const CONTRACT = (process.env.CONTRACT || '').toLowerCase();
-const USER = process.env.USER_ADDR; // Use USER_ADDR instead of USER
+const USER = process.env.USER_ADDR; 
 
-// ---- ABI ----
 const abi = JSON.parse(readFileSync('./abi.clean.json', 'utf8'));
 
-// ---- Public client (for read-only calls) ----
 const client = createPublicClient({
   transport: http(RPC),
 });
 
-// ---- Helper functions ----
 const str = (x) => (typeof x === 'bigint' ? x.toString() : String(x));
 
 function assertHexAddr(a, label = 'address') {
@@ -33,7 +28,6 @@ function assertHexAddr(a, label = 'address') {
   }
 }
 
-// ---- Read functions ----
 async function readCharityPool() {
   const res = await client.readContract({
     address: CONTRACT,
@@ -60,7 +54,6 @@ async function readBalancesOf(addr) {
   });
 }
 
-// ---- Main Execution ----
 (async () => {
   try {
     assertHexAddr(CONTRACT, 'CONTRACT');
